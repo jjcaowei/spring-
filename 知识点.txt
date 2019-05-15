@@ -1,0 +1,278 @@
+springMVC中web.xml中的<servlet>与<servlet-mapping>的作用。
+这是Servlet中的知识点。
+<servlet>用来声明一个Servlet，<description>为Servlet指定一个文本描述，<display-name>
+为Servlet指定一个文本描述。
+
+<servlet>必须含有<servlet-name>和<servlet-class>，或者<servlet-name>和<jsp-file>，下面是详细描述：
+<servlet-name>用来定义servlet的名称，该名称在整个应用中必须是惟一的
+<servlet-class>用来指定servlet的完全限定的名称。
+<jsp-file>用来指定应用中JSP文件的完整路径。这个完整路径必须由/开始。
+
+<load-on-startup>
+如果load-on-startup元素存在，而且也指定了jsp-file元素，则JSP文件会被重新编译成Servlet，同时产生的Servlet也被载入内存。<load-on-startup>的内容可以为空，或者是一个整数。这个值表示由Web容器载入内存的顺序。
+举个例子：如果有两个Servlet元素都含有<load-on-startup>子元素，则<load-on-startup>子元素值较小的Servlet将先被加载。如果<load-on-startup>子元素值为空或负值，则由Web容器决定什么时候加载Servlet。如果两个Servlet的<load-on-startup>子元素值相同，则由Web容器决定先加载哪一个Servlet。
+<load-on-startup>1</load-on-startup>表示启动容器时，初始化Servlet。
+
+<servlet-mapping>
+<servlet-mapping>含有<servlet-name>和<url-pattern>
+<servlet-name>：Servlet的名字，唯一性和一致性，与<servlet>元素中声明的名字一致。
+<url-pattern>：指定相对于Servlet的URL的路径。该路径相对于web应用程序上下文的根路径。<servlet-mapping>将URL模式映射到某个Servlet，即该Servlet处理的URL。
+
+程序的耦合：程序间调用者和被调用者的依赖关系。
+开发时遵循的原则：编译时不依赖，运行时才依赖。
+解决依赖关系：使用反射创建类对象
+使用反射创建类对象引发的新问题：使用配置文件，通过读取配置文件来反射创建类对象
+
+web工程一旦发布，没有src文件。
+，
+IOC所能做的事情仅仅就是解耦。
+
+Qusetion:  单例对象和多例对象的线程安全问题？
+
+Spring中的ApplicationContext接口里的ClassPathXmlApplicationContext与FileSystemXmlApplicationContext
+ClassPathXmlApplicationContext：只能加载类路径下的配置文件
+FileSystemXmlApplicationContext：加载磁盘任意位置下的配置文件
+
+Bean创建的两种规则：
+BeanFactory：提供的是一种延迟加载思想来创建Bean对象。Bean对象什么时候用什么时候创建
+ApplicationContext:提供的是一种立即加载思想来创建Bean对象。解析完配置文件就立即创建bean对象
+
+基于XML的IOC====================================================================
+Bean的三种创建方式：
+第一种方式：调用默认无参构造函数创建
+                   默认情况下，如果类中没有默认无参构造函数，则会创建失败
+第二种方式：使用静态工厂中的方法创建对象
+                   需要使用bean标签的factory-method方法，指定静态工厂中创建对象的方法
+第三种方式：使用实例工厂中的方法创建
+	   需要先对实例工厂进行初始化，bean标签先是：<bean id="" class=""></bean>
+ 	   然后再调用实例工厂中的方法，指定实例工厂创建对象，bean标签是<bean id="" factory-bean="" factory-method=""></bean>
+
+Bean的作用范围：
+         它是可以通过配置的方式来调整作用范围。
+          配置的属性：bean标签的scope属性。
+          属性的取值：
+                     singleton：单例的（默认值）
+                      prototype：多例的（当我们让spring接管structs2的action创建时，action必须配置此值）
+                      request：作用范围是一次请求，和当前请求的转发。
+                      session：作用范围是一次会话。
+                      globalsession：作用范围是一次全局会话。
+
+Bean的生命周期：
+            设计bean标签的两个属性：
+                             init-method
+                             destroy-method
+                  单例：
+                         出生：容器创建，对象就出生了。
+                         活着：只要容器在，对象就一直存在。
+                         死亡：容器销毁，对象消亡。
+                  多例：
+                         出生：每次使用时，创建对象。
+                         活着：只要对象在使用中，就一直活着
+                         死亡：当对象长时间不使用，并且也没有别的对象引用，由java的垃圾回收器回收。
+
+spring的依赖注入
+      注入的方式有3种：
+                第一种：使用构造函数注入
+          	第二种：使用set注入
+    	第三种：使用注解注入
+       注入的数据类型有3类：
+	第一类：基本类型和String类型
+	第二类：其它bean类型（必须是在spring的配置文件中出现过的bean）
+	第三类：复杂类型（集合类型）====（结构相同，可以互换）数组，List，Set，Map，Properties
+
+构造函数注入：
+	涉及的标签：constructor-arg
+	标签的属性：
+		type:指定参数的类型
+		index:指定参数的索引位置，从0开始
+		name:指定参数的名称
+		value:指定基本数据类型或String类型的数据
+		ref:指定其它bean类型的数据
+	标签出现的位置：（写在bean标签内部）
+
+set方法注入：
+	涉及的标签：property
+	标签的属性：
+		type:指定参数的类型
+		index:指定参数的索引位置，从0开始
+		name:指定参数的名称
+		value:指定基本数据类型或String类型的数据
+		ref:指定其它bean类型的数据
+	标签出现的位置：（写在bean标签内部）
+
+
+基于注解的IOC=============================================================
+1.用于创建bean对象
+    	@Component
+		作用：就相当于配置一个bean标签。
+		它能出现的位置：类上面
+		属性：value。含义是指定bean的id。当不写时，它有默认值，默认值是：当前类的短名首字母小写。
+	由此衍生的三个注解：
+		@Controller  一般用于表现层注解
+		@Service   一般用于业务层
+		@Repository   一般用于持久层
+ 	他们和@Component的作用与属性都是一模一样的
+
+2.用于注入数据的
+	@Autowired
+	         作用：自动按照类型注入。只要有唯一的类型匹配就能注入成功。
+	         如果注入的bean在容器中类型不唯一时，它会把变量的名称当作bean的id在容器中查找，找到后也能注入成功。
+	         如果没有找到一致的bean的id时，则报错。
+	         ******当我们使用注解注入时，set方法就不是必须的了。*******
+	@Qualifier
+  	          作用：在自动按照类型注入的基础之上，再按照bean的id注入。它给类成员注入数据时，不能独立使用。
+		    但是在给方法的形参注入数据时，可独立使用。
+	          属性：
+ 		value:用于bean的id。
+	@Resource
+	          作用：直接按照bean的id注入。
+	          属性：
+		name:用于指定bean的id。
+	以上三种类型都是用于注入其它bean类型的。用于注入基本类型和String类型的需要使用Value。
+	@Value
+	          作用：用于注入基本类型和String类型数据。他可以借助Spring的el表达式读取properties文件中的配置。
+	          属性：
+	               value:用于指定要注入的数据。
+
+3.用于改变作用范围的
+	@Scope
+	          作用：用于改变bean的作用范围
+	          属性：
+		value:用于指定范围的取值。
+		取值和xml中scope属性的取值是一样的。singleton prototype request session globalsession
+
+4.和声明周期相关的
+
+5.spring新注解
+	@ComponentScan({"...."})  括号中存放的内容是数组类型  
+	         作用：代替xml文件中要扫描包的配置
+	@Bean//  它是把方法的返回值存入spring容器中。该注解有一个属性，name:用于指定bean的id。当不指定时它有默认值，默认值是方法的名称。
+	@Configuration  //它就是把当前类看成是spring的配置类
+		实例：ApplicationContext ac=new ClassPathXmlApplicationContext("config/bean.xml") =
+		          ApplicationContext ac=new ClassPathXmlApplicationContext("bean.xml",SpringConfiguration.class)
+	@Import  //导入其它配置类
+    spring4.3.5版本以前，spring容器没有内置PropertySourcePlaceholderConfigurer(资源占位符解析器)，4.3.5版本以后加上了。
+
+
+xml和注解的选取方面需考虑：1.文件是否需要经常修改 2.所配置的项目是否一劳永逸
+		          （修改注解意味着修改源码，web工程改完源码需要重新启动服务器，因为tomcat是在服务器启动时加载字节码，之后不再加载；
+		              xml维护起来比较复杂，如果项目的实体类过多，那么xml配置的bean就很多）
+
+spring整合junit
+	第一步：拷贝spring提供的整合jar包
+		spring-test-4.2.4.RELEASE.jar
+	第二步：使用junit提供的一个注解，把原有的main函数替换掉，换成spring提供的
+		@RunWith
+		要换的类：SpringJunit4ClassRunner
+	第三步：使用spring提供的注解告知spring，配置文件或者注解类所在的位置
+		@ContextConfiguration
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+动态代理：
+          作用：不改变源码的基础之上，对已有方法增强。（它是AOP思想的实现技术）
+          分类：
+*****************基于接口的动态代理：********************************************************
+		要求：被代理类最少实现一个接口
+		提供者：JDK官方
+		设计的类：Proxy
+	创建代理对象的方法：newProxyInstance(ClassLoader,Class[],InvocationHandler)
+		参数的含义：
+			ClassLoader:类加载器。和被代理对象使用相同的类加载器。一般都是固定的写法。
+			         Class[]:字节码数组。被代理类实现的接口。（要求代理对象和被代理对象具有相同的行为）。一般都是固定的写法。
+		      InvocationHandler：它是一个接口，就是用于我们提供增强代码的。我们一般都是写一个
+				     该接口的实现类。实现类可以是匿名内部类。
+				     它的含义就是：如何代理。此处的代码只能是谁用谁提供。
+				    策略模式：
+					使用要求：数据已经有了
+						目的明确
+						达成目标的过程就是策略。
+					在dbutils中的ResultSetHandler就是策略模式的具体应用。
+
+			匿名内部类中重载的方法是：
+					invoke(Object proxy, Method method, Object[] args)：
+						执行被代理对象的任何方法都会经过该方法，该方法有拦截的功能
+						方法的参数
+						Object proxy：代理对象的引用。不一定每次都会有。
+						Method method：当前执行的方法 
+						Object[] args：当前执行方法所需的参数
+					返回值：
+					            当前执行方法的返回值
+*****************基于子类的动态代理：************************************************************
+		要求：被代理类不能是最终类。不能被final修饰
+		提供者：第三方CGLib
+		涉及的类：Enhancer
+		创建代理对象的方法：create(Class,Callback);
+		参数的含义：
+			Class：被代理对象的字节码
+			Callback：如何代理。它和InvocationHandler的作用是一样的。它也是一个接口，我们一般使用该接口的子接口MethodInterceptor
+			 	在使用时我们也是创建该接口的匿名内部类。
+
+			匿名内部类中重载的方法是：
+			          intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy)
+				执行被代理对象的任何方法，都会经过该方法。它和基于接口动态代理的invoke方法的作用是一模一样的。
+				方法的参数：
+  				       前面三个和invoke方法的参数含义和作用都一样。
+				       MethodProxy methodProxy：当前执行方法的代理对象。一般不用
+
+***********************************************************************************************************
+基于xml的AOP的配置步骤：
+第一步，把通知类交给spring来管理
+第二步，导入AOP名称空间，并且使用aop:config开始aop的配置
+第三步，使用aop:aspect配置切面。  id属性:用于给切面提供一个唯一标识。 ref属性：用于应用通知Bean的id
+第四步，配置通知的类型，制定增强的方法何时执行。method属性：用于指定增强的方法名称  pointcut属性：用于指定切入点表达式  eg:<aop:before method="printLog" pointcut="execution(public void com.Service.saveCus())"/>
+             切入点表达式：
+	    关键字：execution(表达式)
+	    表达式写法：
+		访问修饰符  返回值  包名.包名...类名.方法名(参数列表)
+		全匹配方式：
+			public void com.itheima.service.impl.CustomerServiceImpl.saveCustomer()
+		访问修饰符可以省略
+			void com.itheima.service.impl.CustomerServiceImpl.saveCustomer()
+		返回值可以使用通配符，表示任意返回值。通配符是*
+			* com.itheima.service.impl.CustomerServiceImpl.saveCustomer()
+		包名可以使用通配符，表示任意包。但是，有几个包就需要写几个*
+			*.*.*.*.CustomerServiceImpl.saveCustomer()
+		包名可以使用..表示当前包及其子包
+			* com..CustomerServiceImpl.saveCustomer()
+		类名和方法名都可以使用通配符
+			* com..*.*()
+		参数列表可以使用具体类型，来表示参数类型
+			基本类型直接写类型名称：int
+			引用类型必须是包名.类名。 java.lang.Integer
+		参数列表可以使用通配符，表示任意参数类型，但是必须有参数
+			* com..*.*(*)
+		参数列表可以使用..表示有无参数均可，有参数可以是任意类型
+			* com..*.*(..)
+		全通配方式：
+			* *..*.*(..)
+		实际开发中，我们一般情况下，我们都是对业务层方法进行增强：
+			所以写法：* com.itheima.service.impl.*.*(..)
+
+定义通用的切入点表达式：如果是写在了aop:aspect标签内部，则表示只有当前页面可用；
+定义通用的切入点表达式，如果写在aop:aspct标签外部，则表示所有切面可用。
+
+环绕通知
+       问题：
+	当我们配置了环绕通知后，切入点方法没有执行，而环绕通知里的代码执行了。
+       分析：
+	有动态可知，环绕通知指的是invoke方法，并且里面有明确的切入点方法调用。而我们现在的环绕通知里没有明确的切入点方法调用。
+       解决：
+	spring为我们提供了一个接口：ProceedingJoinPoint。该接口可以作为环绕通知的方法参数来使用。
+	在程序运行时，spring框架会为我们提供该接口的实现类，供我们使用。
+	该接口中有一个方法，proceed()，它的作用就等同于method.invoke方法，就是明确调用业务层核心方法（切入点方法）。
+
+环绕通知是spring框架为我们提供的一种可以在代码中手动控制通知方法什么时候执行的方式。
+
+spring基于XML的声明式事务控制
+第一步：配置事务管理器
+第二步：配置事务的通知
+第三步：配置aop  
+             要配的是：切入点表达式
+	             通知和切入点表达式的关联
+第四步：配置事务的属性
+             isolation：配置事务的隔离级别。默认值：DEFAULT，使用数据库的默认隔离级别。MySQL是REPEATABLE_READ
+             propagation：配置事务的传播行为。默认值是：REQUIRED。（增删改方法）。当是查询方法时，选择SUPPORTS 
+             timeout：指定事务的超时时间。默认值是：-1，永不超时。当指定其他值时，以秒为单位 
+             read-only：配置是否只读事务。默认值是：false，读写型事务。   当指定为true时，表示只读，只能用于查询方法。 
+             rollback-for：用于指定一个异常，当执行产生该异常时，事务回滚。产生其他异常时，事务不回滚。没有默认值，任何异常都回滚。 
+             no-rollback-for：用于指定一个异常，当执行产生该异常时，事务不回滚。产生其他异常时，事务回滚。没有默认值，任何异常都回滚。
