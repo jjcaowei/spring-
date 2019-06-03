@@ -1,32 +1,32 @@
 如何通过命令行重启linux操作系统？shutdown -h now 或者 reboot
-如何在命令行中快速删除光标前的内容？
+如何在命令行中快速删除光标前的内容？ctrl + u  ctrl+k(删除光标之后的内容)
 设置/test/a.txt属主有读写执行权限，属组，有读写，其他账户无权限chmod 760 /test/a.txt
 如何删除/tmp下所有A开头的文件？rm -rf /tmp/A*
-如何把/etc复制到/tmp下并保持原属性不变？cp /etc /tmp
-如何把/tmp/etc/man.conf移动到/tmp下并改名为test.conf设置所有人都有读写执行权限。
-修改/tmp/test.conf的属主为u1,属组为u2。
-如何查看系统最后创建的3个组？
-什么命令可以统计当前系统中一共有多少账户？
+如何把/etc复制到/tmp下并保持原属性不变？cp -rp /etc /tmp(-p 保持文件本身属性不变)
+如何把/tmp/etc/man.conf移动到/tmp下并改名为test.conf设置所有人都有读写执行权限。mv /tmp/etc/man.conf /tmp/test.conf chmod 777 /tmp/test.conf
+修改/tmp/test.conf的属主为u1,属组为u2。chown u1:u2 /tmp/test.conf
+如何查看系统最后创建的3个组？tail -3 /etc/group
+什么命令可以统计当前系统中一共有多少账户？wc -l /etc/group
 如何通过vim编辑打开/tmp/test.conf?vim /tmp/text.conf
-如何在末行模式中删除test文档中20-50之间所有的行。
+如何在末行模式中删除test文档中20-50之间所有的行。:20,50 d
 /var下一般放置什么文件？缓冲区溢出文件
-如何查看/etc/passwd的头3行 和 尾3行？
+如何查看/etc/passwd的头3行 和 尾3行？head -3 /etc/passwd  tail -3 /etc/passwd
 如何创建g1 g2组？groupadd g1 g2
-添加账户u1,为其指定附加组g1，并设置2013-04-04账户到期。
-添加账户u2，为其指定id号为1000？
-把u1 u2 添加到g2组？
-如何删除g2组的用户u？
-如何查看u2的uid gid？
+添加账户u1,为其指定附加组g1，并设置2013-04-04账户到期。useradd -G g1 -e 2013-04-04 u1
+添加账户u2，为其指定id号为1000？useradd -u 1000 u2
+把u1 u2 添加到g2组？gpasswd -a u1 g2 gpasswd -a u2 g2
+如何删除g2组的用户u？gpasswd -d u g2
+如何查看u2的uid gid？id u2
 如何查看当前工作目录？pwd
-如何一次性创建 text/1/2/3/4？touch -p text/1/2/3/4 
-如何查看/etc下的所有文件，并以人性化的长格式显示能还能区分是什么文件？
-如何最快的返回到当前账户的宿主目录？~
-如何只查看/etc单个目录的信息，并以长格式显示？
-如何查看/etc所占的磁盘空间？df -u /etc
-应用程序一般都安装在那个目录。/use
+如何一次性创建 text/1/2/3/4？mkdir -p text/1/2/3/4 
+如何查看/etc下的所有文件，并以人性化的长格式显示能还能区分是什么文件？ls -alh --color /etc(显示隐藏文件)  ls -alh /etc
+如何最快的返回到当前账户的宿主目录？cd ~
+如何只查看/etc单个目录的信息，并以长格式显示？ls -ld /etc(-d 只显示目录本身的属性) ll -d /etc
+如何查看/etc所占的磁盘空间？du -sh /etc
+应用程序一般都安装在那个目录。/usr
 日志一般都存放在那个目录下？/var/log
 root的宿主目录在那什么位置？/root
 userA用户的宿主目录都在什么位置？/usr
-如何删除/tmp下所有的文件？rm -rf /tmp
+如何删除/tmp下所有的文件？rm -rf /tmp/*
 如何删除/tmp下所有的以A开头的内容？rm -rf /tmp/A*
 vim如何把文档中的50到100行之间的man改为MAN?50,100 s/man/Man/g
