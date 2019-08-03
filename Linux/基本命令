@@ -30,3 +30,4 @@ userA用户的宿主目录都在什么位置？/usr
 如何删除/tmp下所有的文件？rm -rf /tmp/*
 如何删除/tmp下所有的以A开头的内容？rm -rf /tmp/A*
 vim如何把文档中的50到100行之间的man改为MAN?50,100 s/man/Man/g
+linux上传服务器文件的命令为rz,服务器下载文件的命令为sz filename
